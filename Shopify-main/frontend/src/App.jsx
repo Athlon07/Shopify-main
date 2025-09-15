@@ -239,6 +239,7 @@ const AuthPage = ({ onLogin }) => {
 };
 
 // Dashboard Stats Card Component - NEW DESIGN
+// eslint-disable-next-line no-unused-vars
 const StatsCard = ({ title, value, icon: Icon }) => {
   return (
     <div className="bg-[#1a1c1e]/80 backdrop-blur-xl rounded-2xl shadow-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 transform hover:-translate-y-1 group">
@@ -508,6 +509,7 @@ const App = () => {
       try {
         setUser(JSON.parse(savedUser));
         setToken(savedToken);
+      // eslint-disable-next-line no-unused-vars
       } catch (e) {
         localStorage.clear();
       }
