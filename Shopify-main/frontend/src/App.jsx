@@ -285,6 +285,7 @@ const Dashboard = ({ user, token, onLogout }) => {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (dateFrom && dateTo) loadData(); }, [dateFrom, dateTo, token, user.tenantId]);
 
   const formatCurrency = (amount) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
