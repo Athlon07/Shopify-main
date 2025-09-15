@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id            Int        @id @default(autoincrement())
+  shopDomain    String     @unique
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  webhookSecret String?
+  customers     Customer[]
+  orders        Order[]
+  products      Product[]
+  auth          Auth?      // One-to-one relationship with Auth
+}
+
+// New Auth table for authentication
+model Auth {
+  id         Int      @id @default(autoincrement())
+  shopDomain String   @unique
+  password   String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Foreign key to tenant
+  tenantId   Int      @unique
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model Customer {
+  id                Int      @id @default(autoincrement())
+  shopifyCustomerId String
+  email             String?
+  firstName         String?
+  lastName          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  tenantId          Int
+  tenant            Tenant   @relation(fields: [tenantId], references: [id])
+  orders            Order[]
+
+  @@unique([shopifyCustomerId, tenantId])
+}
+
+model Product {
+  id               Int      @id @default(autoincrement())
+  shopifyProductId String
+  title            String
+  vendor           String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  tenantId         Int
+  tenant           Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@unique([shopifyProductId, tenantId])
+}
+
+model Order {
+  id              Int       @id @default(autoincrement())
+  shopifyOrderId  String
+  totalPrice      Decimal   @db.Decimal(10, 2)
+  financialStatus String
+  createdAt       DateTime
+  updatedAt       DateTime  @updatedAt
+  tenantId        Int
+  customerId      Int?
+  customer        Customer? @relation(fields: [customerId], references: [id])
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+
+  @@unique([shopifyOrderId, tenantId])
+}
